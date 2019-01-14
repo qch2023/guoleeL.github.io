@@ -79,16 +79,17 @@
 
 
 
-<meta name="description" content="记录个人的成长和学习过程">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Nil 的个人博客">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="##前言WorkManager 是 Android 推荐的一个用来处理后台任务调度的库，是 Android Jetpack 中的一部分。 WorkManager 封装了 JobScheduler 和 AlarmManager ，根据当前设备的 API level 选取合适的 API 去执行后台任务。 由于项目中在充电灭屏下，需要去执行任务 A, B, C，当时的触发条件的监听都在XTrigger">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WorkManager 使用详解">
+<meta property="og:url" content="http://yoursite.com/2018/12/25/WorkManager-使用详解/index.html">
 <meta property="og:site_name" content="Nil 的个人博客">
-<meta property="og:description" content="记录个人的成长和学习过程">
+<meta property="og:description" content="##前言WorkManager 是 Android 推荐的一个用来处理后台任务调度的库，是 Android Jetpack 中的一部分。 WorkManager 封装了 JobScheduler 和 AlarmManager ，根据当前设备的 API level 选取合适的 API 去执行后台任务。 由于项目中在充电灭屏下，需要去执行任务 A, B, C，当时的触发条件的监听都在XTrigger">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-01-14T06:19:16.119Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Nil 的个人博客">
-<meta name="twitter:description" content="记录个人的成长和学习过程">
+<meta name="twitter:title" content="WorkManager 使用详解">
+<meta name="twitter:description" content="##前言WorkManager 是 Android 推荐的一个用来处理后台任务调度的库，是 Android Jetpack 中的一部分。 WorkManager 封装了 JobScheduler 和 AlarmManager ，根据当前设备的 API level 选取合适的 API 去执行后台任务。 由于项目中在充电灭屏下，需要去执行任务 A, B, C，当时的触发条件的监听都在XTrigger">
 
 
 
@@ -118,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/">
+  <link rel="canonical" href="http://yoursite.com/2018/12/25/WorkManager-使用详解/">
 
 
 
 
 
-  <title>Nil 的个人博客</title>
+  <title>WorkManager 使用详解 | Nil 的个人博客</title>
   
 
 
@@ -143,8 +144,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
@@ -247,9 +247,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -279,9 +279,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/25/WorkManager-使用详解/" itemprop="url">WorkManager 使用详解</a></h1>
+          <h1 class="post-title" itemprop="name headline">WorkManager 使用详解</h1>
         
 
         <div class="post-meta">
@@ -331,9 +329,7 @@
       
 
       
-        
-          
-            <p>##前言<br><code>WorkManager</code> 是 <code>Android</code> 推荐的一个用来处理后台任务调度的库，是 <code>Android Jetpack</code> 中的一部分。</p>
+        <p>##前言<br><code>WorkManager</code> 是 <code>Android</code> 推荐的一个用来处理后台任务调度的库，是 <code>Android Jetpack</code> 中的一部分。</p>
 <p><code>WorkManager</code> 封装了 <code>JobScheduler</code> 和 <code>AlarmManager</code> ，根据当前设备的 API level 选取合适的 API 去执行后台任务。</p>
 <p>由于项目中在充电灭屏下，需要去执行任务 A, B, C，当时的触发条件的监听都在<code>XTrigger</code> 中去做的，所以当满足条件时，会在 <code>XXTrigger</code> 中去启动任务 A, B, C, 这三个任务分属不同的模块，由这些模块提供启动接口，启动后分别去异步执行任务。</p>
 <p>##常规使用</p>
@@ -408,8 +404,6 @@ String resourceUri=getInputData().getString(Constants.KEY_IMAGE_URI);
 <p><strong>解决:</strong><br>这个问题其实是 <code>WorkManager</code> 早期版本的一个 bug，在 <code>Worker</code> 任务执行完后，<code>Job</code> 没有被设置为正确结束，导致 <code>Job</code> 一直在增加。</p>
 <p>当时是在 <code>android.arch.work:work-runtime:1.0.0-alpha08</code> 版本上遇到这个问题，后续升级到 <code>android.arch.work:work-runtime:1.0.0-alpha11</code> 问题得到修复，确认是 <code>WorkManager</code> 早期的一个原生 bug.</p>
 
-          
-        
       
     </div>
     
@@ -426,140 +420,28 @@ String resourceUri=getInputData().getString(Constants.KEY_IMAGE_URI);
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/21/hello-world/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Nil">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Nil 的个人博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/12/21/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-21T17:35:26+08:00">
-                2018-12-21
-              </time>
+              <a href="/2018/12/21/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2><span id="quick-start">Quick Start</span></h2><h3><span id="create-a-new-post">Create a new post</span></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3><span id="run-server">Run server</span></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3><span id="generate-static-files">Generate static files</span></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3><span id="deploy-to-remote-sites">Deploy to remote sites</span></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -569,10 +451,11 @@ String resourceUri=getInputData().getString(Constants.KEY_IMAGE_URI);
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -580,6 +463,10 @@ String resourceUri=getInputData().getString(Constants.KEY_IMAGE_URI);
 
 
           
+
+  
+
+
 
         </div>
         
@@ -785,6 +672,10 @@ String resourceUri=getInputData().getString(Constants.KEY_IMAGE_URI);
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
