@@ -337,58 +337,39 @@
 <p><code>WorkManager</code> 封装了 <code>JobScheduler</code> 和 <code>AlarmManager</code> ，根据当前设备的 API level 选取合适的 API 去执行后台任务。</p>
 <p>由于项目中在充电灭屏下，需要去执行任务 A, B, C，当时的触发条件的监听都在<code>XTrigger</code> 中去做的，所以当满足条件时，会在 <code>XXTrigger</code> 中去启动任务 A, B, C, 这三个任务分属不同的模块，由这些模块提供启动接口，启动后分别去异步执行任务。</p>
 <h2><span id="引用配置">引用配置</span></h2><ol>
-<li><p>在 <strong>app/build.gradle</strong> 下进行如下配置：</p>
-<pre>
-dependencies {
-// Other dependencies
-implementation "android.arch.work:work-runtime:$versions.work"
-}
-</pre>
-</li>
-<li><p><strong>build.gradle</strong></p>
-<pre>
-versions.work = "1.0.0-beta01"
-</pre>
-
-</li>
+<li>在 <strong>app/build.gradle</strong> 下进行如下配置：</li>
 </ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">  // Other dependencies</span><br><span class="line">  implementation &quot;android.arch.work:work-runtime:$versions.work&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><strong>build.gradle</strong></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">versions.work = &quot;1.0.0-beta01&quot;</span><br></pre></td></tr></table></figure>
 <h2><span id="链式执行任务">链式执行任务</span></h2><p><code>WorkManager</code> 中主要的几个类：</p>
 <ul>
 <li><code>Worker</code>: 实际的任务执行类，实际使用中需要 extend 这个类，并重载 <code>doWork()</code> 方法；</li>
 <li><code>WorkRequest</code>：任务请求类，创建这个类的对象时，需要传递 <code>Worker</code> 对象作为参数。另外，对于任务在什么情况下执行，可以通过指定 <code>Constraints</code> 对象，来添加任务执行的约束条件。</li>
 <li><code>WorkManager</code>：实际调度 <code>WorkRequest</code> 并执行请求的，在调度执行 <code>WorkRequest</code> 前，<code>WorkManager</code> 会判断当前的系统资源是否适合执行这些任务，以及通过 <code>WorkRequest</code> 传入的约束条件是否满足。</li>
 </ul>
-<p><pre><br>WorkContinuation continuation = mWorkManager.beginWith(workA);</pre></p>
-<p>continuation.then(workB) // FYI, then() returns a new WorkContinuation instance<br>        .then(workC)<br>        .enqueue(); // Enqueues the WorkContinuation which is a chain of work<br><br>通过上面的代码，就可以依次执行 workA, workB, workC. 主要是通过 <code>WorkManager.beginWith()</code> 方法返回的 <code>WorkContinuation</code> 来依次执行任务。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WorkContinuation continuation = mWorkManager.beginWith(workA);</span><br><span class="line">continuation.then(workB) // FYI, then() returns a new WorkContinuation instance</span><br><span class="line">        .then(workC)</span><br><span class="line">        .enqueue(); // Enqueues the WorkContinuation which is a chain of work</span><br></pre></td></tr></table></figure>
+<p>通过上面的代码，就可以依次执行 workA, workB, workC. 主要是通过 <code>WorkManager.beginWith()</code> 方法返回的 <code>WorkContinuation</code> 来依次执行任务。</p>
 <h3><span id="添加-worker-的输入输出参数">添加 <code>Worker</code> 的输入/输出参数</span></h3><p>输入/输出参数是通过传递 <code>Data</code> 对象来实现，传入参数是通过 <code>WorkRequest.setInputData(Data data)</code> 方法实现，输出参数是在具体的 <code>Worker.doWork()</code> 方法中调用 <code>setOutputData(Data data)</code></p>
 <p>示例如下:</p>
 <ol>
-<li><p>创建 <code>Data</code> 对象<br><pre><br>private Data createInputDataForUri() {</pre></p>
-<pre><code>Data.Builder builder = new Data.Builder();
-if (mImageUri != null) {
-    builder.putString(KEY_IMAGE_URI, mImageUri.toString());
-}
-return builder.build();
-</code></pre><p>}</p>
-</li>
-<li><p>往<code>WorkRequest</code>中传递 <code>Data</code> 对象<br><pre><br>void applyBlur(int blurLevel) {</pre></p>
-<pre><code>OneTimeWorkRequest blurRequest =
-        new OneTimeWorkRequest.Builder(BlurWorker.class)
-                .setInputData(createInputDataForUri())
-                .build();
-mWorkManager.enqueue(blurRequest);
-</code></pre><p>}</p>
-</li>
-<li><p>在 <code>doWork()</code> 方法中获取输入对象<br><pre><br>public Worker.Result doWork() {</pre></p>
-<pre><code>Context applicationContext = getApplicationContext();
-String resourceUri=getInputData().getString(Constants.KEY_IMAGE_URI);
-//... rest of doWork()
-</code></pre><p>}</p>
-</li>
-<li><p>任务执行完后，输出参数，在 <code>doWork()</code> 方法最后调用 <code>setOutputData()</code><br><pre><br>setOutputData(new Data.Builder().putString(</pre></p>
-<pre><code>Constants.KEY_IMAGE_URI, outputUri.toString()).build());
-</code></pre></li>
+<li>创建 <code>Data</code> 对象</li>
 </ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private Data createInputDataForUri() &#123;</span><br><span class="line">		Data.Builder builder = new Data.Builder();</span><br><span class="line">		if (mImageUri != null) &#123;</span><br><span class="line">			builder.putString(KEY_IMAGE_URI, mImageUri.toString());</span><br><span class="line">    	&#125;</span><br><span class="line">    	return builder.build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>往<code>WorkRequest</code>中传递 <code>Data</code> 对象</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void applyBlur(int blurLevel) &#123;</span><br><span class="line">		OneTimeWorkRequest blurRequest =</span><br><span class="line">				new OneTimeWorkRequest.Builder(BlurWorker.class)</span><br><span class="line">                        .setInputData(createInputDataForUri())</span><br><span class="line">                        .build();</span><br><span class="line">		mWorkManager.enqueue(blurRequest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>在 <code>doWork()</code> 方法中获取输入对象</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public Worker.Result doWork() &#123;</span><br><span class="line">       Context applicationContext = getApplicationContext();</span><br><span class="line">       String resourceUri=getInputData().getString(Constants.KEY_IMAGE_URI);</span><br><span class="line">       //... rest of doWork()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>任务执行完后，输出参数，在 <code>doWork()</code> 方法最后调用 <code>setOutputData()</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setOutputData(new Data.Builder().putString(</span><br><span class="line">                    Constants.KEY_IMAGE_URI, outputUri.toString()).build());</span><br></pre></td></tr></table></figure>
 <h2><span id="取消任务">取消任务</span></h2><p><code>WorkManager</code> 的取消任务方法，并不能保证任务马上会停止，通过库里面的注释说明，他只能尽自己最大的努力去取消。但是，会设置一个标志位。</p>
 <p>在使用的时候，通过在关键的地方加入判断任务是否取消的标志位逻辑，可以让任务不再继续执行。</p>
 <p>通常的取消任务方式：</p>
