@@ -530,10 +530,10 @@
       
         
           
-            <h2><span id="前言">前言</span></h2><p><code>WorkManager</code> 是 <code>Android</code> 推荐的一个用来处理后台任务调度的库，是 <code>Android Jetpack</code> 中的一部分。</p>
+            <p>[TOC] ## 前言<br><code>WorkManager</code> 是 <code>Android</code> 推荐的一个用来处理后台任务调度的库，是 <code>Android Jetpack</code> 中的一部分。</p>
 <p><code>WorkManager</code> 封装了 <code>JobScheduler</code> 和 <code>AlarmManager</code> ，根据当前设备的 API level 选取合适的 API 去执行后台任务。</p>
 <p>由于项目中在充电灭屏下，需要去执行任务 A, B, C，当时的触发条件的监听都在<code>XTrigger</code> 中去做的，所以当满足条件时，会在 <code>XXTrigger</code> 中去启动任务 A, B, C, 这三个任务分属不同的模块，由这些模块提供启动接口，启动后分别去异步执行任务。</p>
-<p>[TOC]## 引用配置</p>
+<p>[TOC] ## 引用配置</p>
 <ol>
 <li>在 <strong>app/build.gradle</strong> 下进行如下配置：</li>
 </ol>
@@ -542,7 +542,7 @@
 <li><strong>build.gradle</strong></li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">versions.work = &quot;1.0.0-beta01&quot;</span><br></pre></td></tr></table></figure>
-<p>[TOC]## 链式执行任务<br><code>WorkManager</code> 中主要的几个类：</p>
+<p>[TOC] ## 链式执行任务<br><code>WorkManager</code> 中主要的几个类：</p>
 <ul>
 <li><code>Worker</code>: 实际的任务执行类，实际使用中需要 extend 这个类，并重载 <code>doWork()</code> 方法；</li>
 <li><code>WorkRequest</code>：任务请求类，创建这个类的对象时，需要传递 <code>Worker</code> 对象作为参数。另外，对于任务在什么情况下执行，可以通过指定 <code>Constraints</code> 对象，来添加任务执行的约束条件。</li>
@@ -550,7 +550,7 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">WorkContinuation continuation = mWorkManager.beginWith(workA);</span><br><span class="line">continuation.then(workB) // FYI, then() returns a new WorkContinuation instance</span><br><span class="line">        .then(workC)</span><br><span class="line">        .enqueue(); // Enqueues the WorkContinuation which is a chain of work</span><br></pre></td></tr></table></figure>
 <p>通过上面的代码，就可以依次执行 workA, workB, workC. 主要是通过 <code>WorkManager.beginWith()</code> 方法返回的 <code>WorkContinuation</code> 来依次执行任务。</p>
-<p>[TOC]### 添加 <code>Worker</code> 的输入/输出参数<br>输入/输出参数是通过传递 <code>Data</code> 对象来实现，传入参数是通过 <code>WorkRequest.setInputData(Data data)</code> 方法实现，输出参数是在具体的 <code>Worker.doWork()</code> 方法中调用 <code>setOutputData(Data data)</code></p>
+<p>[TOC] ### 添加 <code>Worker</code> 的输入/输出参数<br>输入/输出参数是通过传递 <code>Data</code> 对象来实现，传入参数是通过 <code>WorkRequest.setInputData(Data data)</code> 方法实现，输出参数是在具体的 <code>Worker.doWork()</code> 方法中调用 <code>setOutputData(Data data)</code></p>
 <p>示例如下:</p>
 <ol>
 <li>创建 <code>Data</code> 对象</li>
@@ -576,7 +576,7 @@
 <li>调用 <code>WorkManager.cancelUniqueWork()</code> 取消任务</li>
 <li>取消方法被调用后， <code>Worker.isStopped()</code> 方法就会返回 true, 这时我们可以选择不再执行后续任务。</li>
 </ol>
-<p>[TOC]## 遇到的问题<br><strong>问题：</strong><br>出现 java.lang.IllegalStateException: Apps may not schedule more than 100 distinct jobs. </p>
+<p>[TOC] ## 遇到的问题<br><strong>问题：</strong><br>出现 java.lang.IllegalStateException: Apps may not schedule more than 100 distinct jobs. </p>
 <p><strong>原因：</strong><br>Android 系统有限制，对于每个应用，最多只能有 100 个等待调度执行的 job. 超过 100 个的限制，就会抛出 <code>java.lang.IllegalStateException</code>。</p>
 <p><strong>问题确认：</strong></p>
 <ul>
